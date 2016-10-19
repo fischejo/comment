@@ -6,9 +6,9 @@ What is an **item**?
 --------------------
 An Item is a simple text line, which can be pasted to the comment box.
 
-What is a **group**?
+What is a **folder**?
 --------------------
-Groups help you to organize multiple items and collections.
+Folders help you to organize multiple items and collections.
 
 What is a **collection**?
 -------------------------
