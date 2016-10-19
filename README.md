@@ -1,5 +1,8 @@
 # Kommentarbaum
 Hierbei handelt es sich um ein Javascript, welches eine editierbare Liste mit Kommentaren zu der Online Uebungssystem hinzufügt. Eine Auswahl von passenden Kommentaren ermöglicht eine detailliertere Korrektur der Uebungsaufgaben. 
+
+![Beispiel](https://github.com/pecheur/jscomment/blob/master/example.png)
+
 # Installation
 Das Firefox Addon Greasemonkey erlaubt es eigene JavaScript-Scripte in Webseiten einzubetten.
 1. Installation von **Firefox**
