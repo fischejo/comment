@@ -12,7 +12,7 @@ Folders help you to organize multiple items and collections.
 
 What is a **collection**?
 -------------------------
-A Collection behaves like an item, but groups multiple items and represent one children by random. Whenever the side is reloaded or The Context Menu option Dice is called, another child item is selected.
+A Collection behaves like an item, but groups multiple items and represent one child by random. Whenever the side is reloaded or The Context Menu option Dice is called, another child item is selected.
 
 Is **HTML** supported by items?
 -------------------------------
