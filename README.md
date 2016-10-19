@@ -9,5 +9,5 @@ Das Firefox Addon Greasemonkey erlaubt es eigene JavaScript-Scripte in Webseiten
 # Updates
 Greasmonkey ermöglicht das automatische Updaten von User Scripten. Dies wird auch von **Kommentarbaum** unterstützt.
 
-#include "faq.md"
+[**FAQ**](https://github.com/pecheur/jscomment/blob/master/faq.md)
   
