@@ -3,8 +3,8 @@
 // @namespace   hagen-online-uebungssystem-comment
 // @include     https://online-uebungssystem.fernuni-hagen.de/desel/KorrektorKorrekturAccessAufgabe/01613/*
 // @description	Inserts a treeview of comments to Online Uebungssystem.
-// @downloadURL	https://github.com/pecheur/jscomment/raw/master/comment.user.js
-// @updateURL	https://github.com/pecheur/jscomment/raw/master/comment.user.js
+// @downloadURL	https://github.com/pecheur/comment/raw/master/comment.user.js
+// @updateURL	https://github.com/pecheur/comment/raw/master/comment.user.js
 // @version	1
 // @grant	GM_addStyle
 // @grant	GM_getResourceText
@@ -15,17 +15,17 @@
 // @grant	GM_openInTab
 // @require https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js
 // @require https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js
-// @resource minstyle https://raw.githubusercontent.com/pecheur/jscomment/master/style.min.css
-// @resource item https://github.com/pecheur/jscomment/blob/master/page_white.png?raw=true
-// @resource folder https://github.com/pecheur/jscomment/blob/master/folder.png?raw=true
-// @resource collection https://github.com/pecheur/jscomment/blob/master/page_white_stack.png?raw=true
-// @resource pencil https://github.com/pecheur/jscomment/blob/master/pencil.png?raw=true
-// @resource clipboard https://github.com/pecheur/jscomment/blob/master/paste_plain.png?raw=true 
-// @resource dice https://github.com/pecheur/jscomment/blob/master/dice.png?raw=true
-// @resource help https://github.com/pecheur/jscomment/blob/master/help.png?raw=true
-// @resource richedit https://github.com/pecheur/jscomment/blob/master/richtext_editor.png?raw=true
-// @resource add https://github.com/pecheur/jscomment/blob/master/add.png?raw=true
-// @resource delete https://github.com/pecheur/jscomment/blob/master/delete.png?raw=true
+// @resource minstyle https://raw.githubusercontent.com/pecheur/comment/master/style.min.css
+// @resource item https://github.com/pecheur/comment/blob/master/page_white.png?raw=true
+// @resource folder https://github.com/pecheur/comment/blob/master/folder.png?raw=true
+// @resource collection https://github.com/pecheur/comment/blob/master/page_white_stack.png?raw=true
+// @resource pencil https://github.com/pecheur/comment/blob/master/pencil.png?raw=true
+// @resource clipboard https://github.com/pecheur/comment/blob/master/paste_plain.png?raw=true 
+// @resource dice https://github.com/pecheur/comment/blob/master/dice.png?raw=true
+// @resource help https://github.com/pecheur/comment/blob/master/help.png?raw=true
+// @resource richedit https://github.com/pecheur/comment/blob/master/richtext_editor.png?raw=true
+// @resource add https://github.com/pecheur/comment/blob/master/add.png?raw=true
+// @resource delete https://github.com/pecheur/comment/blob/master/delete.png?raw=true
 // ==/UserScript==
 
 
@@ -101,7 +101,7 @@ content.innerHTML = `
 	
 	<div style="float:right;">
 	<input id="hkt_search" placeholder="Search"  value="" class="input" style="margin:0em auto 1em auto; display:block; padding:4px; border:1px solid silver; height:12px;float:right;" type="text"/>
-	<button id="hkt_faq" style="float:right; height:22px;margin-right:5px;">FAQ</button>
+	<button id="hkt_faq" style="float:right; height:22px;margin-right:5px;">Github</button>
 </div>
 
 <!--tree-->
@@ -120,7 +120,7 @@ collection.parentNode.insertBefore(content, collection.previousSibling);
 // faq button
 document.getElementById('hkt_faq').onclick = hkt_faq;
 function hkt_faq() {
-	GM_openInTab("https://github.com/pecheur/jscomment/blob/master/README.md");
+	GM_openInTab("https://github.com/pecheur/comment/blob/master/README.md");
 };
 
 
