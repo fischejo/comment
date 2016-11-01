@@ -1,4 +1,4 @@
-# Kommentarbaum
+# jsComment
 Hierbei handelt es sich um ein Javascript, welches eine editierbare Liste mit Kommentaren zu der Online Uebungssystem hinzufügt. Eine Auswahl von passenden Kommentaren ermöglicht eine detailliertere Korrektur der Uebungsaufgaben. 
 
 ![Beispiel](https://github.com/pecheur/jscomment/blob/master/example.png)
@@ -8,7 +8,7 @@ Das Firefox Addon Greasemonkey erlaubt es eigene JavaScript-Scripte in Webseiten
 
 1. Installation von **Firefox** 
 2. Installation von [**Greasmonkey**](https://addons.mozilla.org/de/firefox/addon/greasemonkey/) Addon
-3. Installation von [**Kommentarbaum**](https://gist.github.com/pecheur/928b8680119795406baddd536110bc57/raw/586528939b30efdafeba7fe8d1495aa7988db648/hagen.user.js) User Script.
+3. Installation von [**jsComment**](https://gist.github.com/pecheur/928b8680119795406baddd536110bc57/raw/2a1aa4d081af471942477111b9eb884819103201/hagen.user.js) User Script.
 
 # Updates
 ## Version 3
