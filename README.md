@@ -23,6 +23,8 @@ Das Firefox Addon Greasemonkey erlaubt es eigene JavaScript-Scripte in Webseiten
 * Context-Menu -> Copy to Clipboard: disabled, da kein HTML Support möglich.
 
 # FAQ
+## Does this user script supports Chrome/Chromium:
+No
 
 ## What is an **item**?
 An Item is a simple text line, which can be pasted to the comment box.
