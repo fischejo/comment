@@ -8,10 +8,15 @@ Das Firefox Addon Greasemonkey erlaubt es eigene JavaScript-Scripte in Webseiten
 
 1. Installation von **Firefox** 
 2. Installation von [**Greasmonkey**](https://addons.mozilla.org/de/firefox/addon/greasemonkey/) Addon
-3. Installation von **Kommentarbaum** User Script.  Sende mir hierfür bitte eine Email. Anschließend werde ich dir einen Link zukommen, welcher nur noch angeklickt werden muss.
+3. Installation von [**Kommentarbaum**](https://gist.github.com/pecheur/928b8680119795406baddd536110bc57/raw/9167df3064114c0dd51d82cd8ec59ef557af6263/hagen.user.js) User Script.
 
 # Updates
-Greasmonkey ermöglicht das automatische Updaten von User Scripten. Dies wird auch von **Kommentarbaum** unterstützt.
+## Version 3
+* Für aktuelle Aufgaben angepasst.
+
+## Version 4
+* Context-Menu -> Paste: deaktivirt, da noch nicht implementiert.
+* Context-Menu -> Copy to Clipboard: funktioniert nur mit Text und nicht mit Html.
 
 # FAQ
 
