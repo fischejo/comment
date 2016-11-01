@@ -1,26 +1,20 @@
-# jsComment
-Hierbei handelt es sich um ein Javascript, welches eine editierbare Liste mit Kommentaren zu der Online Uebungssystem hinzufügt. Eine Auswahl von passenden Kommentaren ermöglicht eine detailliertere Korrektur der Uebungsaufgaben. 
+# Comment
+Hierbei handelt es sich um ein User Script, welches eine editierbare Liste mit Kommentaren zu dem Online Uebungssystem der Fernuniversität Hagen hinzufügt.
 
 ![Beispiel](https://github.com/pecheur/jscomment/blob/master/example.png)
 
 # Installation
 Das Firefox Addon Greasemonkey erlaubt es eigene JavaScript-Scripte in Webseiten einzubetten.
 
-1. Installation von **Firefox** 
+1. Installation von [**Firefox**](https://www.mozilla.org/en-US/firefox/new/)
 2. Installation von [**Greasmonkey**](https://addons.mozilla.org/de/firefox/addon/greasemonkey/) Addon
-3. Installation von [**jsComment**](https://gist.github.com/pecheur/928b8680119795406baddd536110bc57/raw/cdd9ca1f97d5a725dd69381dadda763cc4b19832/hagen.user.js) User Script.
+3. Installation von [**Comment**](https://github.com/pecheur/jscomment/raw/master/comment.user.js) User Script.
 
 # Updates
-## Version 3
+## Version 1
 * Für aktuelle Aufgaben angepasst.
-
-## Version 4
-* Context-Menu -> Paste: deaktiviert, da noch nicht implementiert.
-* Context-Menu -> Copy to Clipboard: funktioniert nur mit Text und nicht mit Html.
-
-## Version 5
 * Context-Menu -> Paste: implementiert
-* Context-Menu -> Copy to Clipboard: disabled, da kein HTML Support möglich.
+* Automatic script update enabled
 
 # FAQ
 ## Does this user script support Chrome/Chromium:
