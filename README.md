@@ -15,8 +15,12 @@ Das Firefox Addon Greasemonkey erlaubt es eigene JavaScript-Scripte in Webseiten
 * Für aktuelle Aufgaben angepasst.
 
 ## Version 4
-* Context-Menu -> Paste: deaktivirt, da noch nicht implementiert.
+* Context-Menu -> Paste: deaktiviert, da noch nicht implementiert.
 * Context-Menu -> Copy to Clipboard: funktioniert nur mit Text und nicht mit Html.
+
+## Version 5
+* Context-Menu -> Paste: implementiert
+* Context-Menu -> Copy to Clipboard: disabled, da kein HTML Support möglich.
 
 # FAQ
 
