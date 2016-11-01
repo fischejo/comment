@@ -3,9 +3,9 @@
 // @namespace   hagen-online-uebungssystem-comment
 // @include     https://online-uebungssystem.fernuni-hagen.de/desel/KorrektorKorrekturAccessAufgabe/01613/*
 // @description	Inserts a treeview of comments to Online Uebungssystem.
-// @downloadURL	https://gist.github.com/pecheur/928b8680119795406baddd536110bc57/raw/586528939b30efdafeba7fe8d1495aa7988db648/hagen.user.js
-// @updateURL	https://gist.github.com/pecheur/928b8680119795406baddd536110bc57/raw/586528939b30efdafeba7fe8d1495aa7988db648/hagen.user.js
-// @version		1
+// @downloadURL	https://github.com/pecheur/jscomment/raw/master/comment.user.js
+// @updateURL	https://github.com/pecheur/jscomment/raw/master/comment.user.js
+// @version	1
 // @grant	GM_addStyle
 // @grant	GM_getResourceText
 // @grant	GM_getResourceURL
