@@ -7,7 +7,7 @@ Hierbei handelt es sich um ein User Script, welches eine editierbare Liste mit K
 Das Firefox Addon Greasemonkey erlaubt es eigene JavaScript-Scripte in Webseiten einzubetten.
 
 1. Installation von [**Firefox**](https://www.mozilla.org/en-US/firefox/new/)
-2. Installation von [**Greasmonkey**](https://addons.mozilla.org/de/firefox/addon/greasemonkey/) Addon
+2. Installation von [**Greasemonkey**](https://addons.mozilla.org/de/firefox/addon/greasemonkey/) Addon
 3. Installation von [**Comment**](https://github.com/pecheur/jscomment/raw/master/comment.user.js) User Script.
 
 # Updates
