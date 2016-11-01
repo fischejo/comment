@@ -15,6 +15,7 @@ Das Firefox Addon Greasemonkey erlaubt es eigene JavaScript-Scripte in Webseiten
 * Für aktuelle Aufgaben angepasst.
 * Context-Menu -> Paste: implementiert
 * Automatic script update enabled
+* Pay attention: not compatible with jscomment beta. Backup your tree and load it in the new version.
 
 # FAQ
 ## Does this user script support Chrome/Chromium:
