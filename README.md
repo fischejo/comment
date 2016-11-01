@@ -8,7 +8,7 @@ Das Firefox Addon Greasemonkey erlaubt es eigene JavaScript-Scripte in Webseiten
 
 1. Installation von **Firefox** 
 2. Installation von [**Greasmonkey**](https://addons.mozilla.org/de/firefox/addon/greasemonkey/) Addon
-3. Installation von [**Kommentarbaum**](https://gist.github.com/pecheur/928b8680119795406baddd536110bc57/raw/9167df3064114c0dd51d82cd8ec59ef557af6263/hagen.user.js) User Script.
+3. Installation von [**Kommentarbaum**](https://gist.github.com/pecheur/928b8680119795406baddd536110bc57/raw/586528939b30efdafeba7fe8d1495aa7988db648/hagen.user.js) User Script.
 
 # Updates
 ## Version 3
