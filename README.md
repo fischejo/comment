@@ -50,3 +50,8 @@ By using the right click on a tree item.
 
 ## Is multiple selection possible?
 Yes, by holding STRG-key pressed.
+
+# Links
+[comment-helper](https://github.com/pecheur/comment-helper) is a similar tool written in Java, but it does not depend on the Übungsplattform der Fernuniversität Hagen. **Pay attention:** It is not compatible with this tool.
+
+[langstrumpf](https://github.com/pecheur/langstrumpf) Another script for modifying the Übungsplattform.
