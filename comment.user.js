@@ -3,8 +3,8 @@
 // @namespace   hagen-online-uebungssystem-comment
 // @include     https://online-uebungssystem.fernuni-hagen.de/desel/KorrektorKorrekturAccessAufgabe/01613/*
 // @description	Inserts a treeview of comments to Online Uebungssystem.
-// @downloadURL	https://github.com/pecheur/comment/raw/master/comment.user.js
-// @updateURL	https://github.com/pecheur/comment/raw/master/comment.user.js
+// @downloadURL	https://github.com/pecheur/comment/raw/usability/comment.user.js
+// @updateURL	https://github.com/pecheur/comment/raw/usability/comment.user.js
 // @version	1
 // @grant	GM_addStyle
 // @grant	GM_getResourceText
@@ -20,13 +20,12 @@
 // @resource folder https://github.com/pecheur/comment/blob/master/folder.png?raw=true
 // @resource collection https://github.com/pecheur/comment/blob/master/page_white_stack.png?raw=true
 // @resource pencil https://github.com/pecheur/comment/blob/master/pencil.png?raw=true
-// @resource clipboard https://github.com/pecheur/comment/blob/master/paste_plain.png?raw=true 
 // @resource dice https://github.com/pecheur/comment/blob/master/dice.png?raw=true
 // @resource help https://github.com/pecheur/comment/blob/master/help.png?raw=true
-// @resource richedit https://github.com/pecheur/comment/blob/master/richtext_editor.png?raw=true
 // @resource add https://github.com/pecheur/comment/blob/master/add.png?raw=true
 // @resource delete https://github.com/pecheur/comment/blob/master/delete.png?raw=true
 // ==/UserScript==
+
 
 
 
@@ -100,8 +99,8 @@ content.innerHTML = `
 	<input id='hkt_open' type='file' accept='application/json' style='float:left;height: 22px;'>
 	
 	<div style="float:right;">
-	<input id="hkt_search" placeholder="Search"  value="" class="input" style="margin:0em auto 1em auto; display:block; padding:4px; border:1px solid silver; height:12px;float:right;" type="text"/>
-	<button id="hkt_faq" style="float:right; height:22px;margin-right:5px;">Github</button>
+		<input id="hkt_search" placeholder="Search"  value="" class="input" style="margin:0em auto 1em auto; display:block; padding:4px; border:1px solid silver; height:12px;float:right;" type="text"/>
+	</div>
 </div>
 
 <!--tree-->
@@ -116,12 +115,6 @@ collection.parentNode.insertBefore(content, collection.previousSibling);
 // ============================================================================
 //  JS
 // ============================================================================
-
-// faq button
-document.getElementById('hkt_faq').onclick = hkt_faq;
-function hkt_faq() {
-	GM_openInTab("https://github.com/pecheur/comment/blob/master/README.md");
-};
 
 
 // open file
@@ -219,41 +212,26 @@ $('#hkt_search').keyup(function () {
 });
 
 
-// pasting logic
-var pastein = [];
-$('#hkt_tree').on("changed.jstree", function (e, data) {
-	var i, j;
-	pastein = [];
+// select_node
+$('#hkt_tree').on("select_node.jstree", function (e, data) {
 
-	// remove unselected
-	for(var e in data.unselected) {
-		var index = array.indexOf(e);
-		if (index >= 0) {
-			pastein.splice(index, 1);
-        }
+	var tm = (unsafeWindow.tinyMCE) ? unsafeWindow.tinyMCE : null;  
+	if(tm!= null){
+		var i, j, r = [];
+		for(i = 0, j = data.selected.length; i < j; i++) {
+			r.push(data.instance.get_node(data.selected[i]).text);
+		}	
+		tm.activeEditor.execCommand('mceInsertContent', false, r.join(' '));
 	}
 
-    for(i = 0, j = data.selected.length; i < j; i++) {
-		pastein.push(data.instance.get_node(data.selected[i]));
-    }
 });
 
-function hkt_paste(obj) {
-	var i,j,tmp = "";
-
-	for(i = 0, j = obj.length; i < j; i++) {	
-		tmp += obj[i].text + " ";
-	}
-	return tmp;
-};
-
-
+// backup after changes
 $('#hkt_tree').on('create_node.jstree', function (e, data) {
 	if (data.node.type === "item") {
 		update_collection( data.parent);
 	}
-	
-	// backup
+
 	GM_setValue("hkt_store", get_reduced_json());
 })
 
@@ -262,7 +240,6 @@ $('#hkt_tree').on('rename_node.jstree', function (e, data) {
 		update_collection( data.node.parent);
 	}
 
-	// backup
 	GM_setValue("hkt_store", get_reduced_json());
 })
 
@@ -271,7 +248,6 @@ $('#hkt_tree').on('delete_node.jstree', function (e, data) {
 		update_collection( data.parent);
 	}
 
-	// backup
 	GM_setValue("hkt_store", get_reduced_json());
 })
 
@@ -281,7 +257,6 @@ $('#hkt_tree').on('move_node.jstree', function (e, data) {
 		update_collection( data.old_parent);
 	}
 
-	// backup
 	GM_setValue("hkt_store", get_reduced_json());
 
 })
@@ -309,20 +284,20 @@ $('#hkt_tree').jstree({
 			'data' : false,	
 			"animation" : false,
 			'check_callback': true,
+			"multiple" : false,
 			"themes" : {	
 				"stripes" : true,
 				'variant' : 'small',
 				"dots": true,
 				"icons": true
-
 			}
-
 		},
 		"conditionalselect" : function (node, event) {
 			return (node.type === 'item') || (node.type === 'collection');
 		},
 		"contextmenu": { 
 			"show_at_node":false,
+			"select_node":false,
 			"items": hkt_contextmenu
 		},
 		"dnd": {
@@ -346,7 +321,7 @@ $('#hkt_tree').jstree({
 				"valid_children" : [ "item" ]
 		    }
 		},
-		"plugins" : [ "contextmenu", "dnd", "conditionalselect", "types", "search", "changed", "wholerow" ]
+		"plugins" : [ "contextmenu", "dnd", "conditionalselect", "types", "search" , "wholerow" ]
 
 });
 
@@ -450,42 +425,6 @@ function hkt_contextmenu(node)
 		});
     }	
 
-	
-
-	if((node.type === "item") || (node.type === "collection")) {		
-		$.extend(items, {
-			"paste" : {
-				"separator_before"	: false,
-				"icon"				: GM_getResourceURL("richedit"),
-				"separator_after"	: false,
-				"label"				: "Paste",
-				"action"			: function (data) {
-					setTimeout(function () { 
-						// sneaky hack
-						var tm = (unsafeWindow.tinyMCE) ? unsafeWindow.tinyMCE : null;  
-						if(tm!= null){
-							tm.activeEditor.execCommand('mceInsertContent', false, hkt_paste(pastein));
-						}
-						
-					});
-				}
-			},
-			"clip" : {
-				"separator_before"	: false,
-				"icon"				: GM_getResourceURL("clipboard"),
-				"separator_after"	: true,
-				"label"				: "Copy to Clipboard",
-				"_disabled"			: false,
-				"action"			: function (data) {
-					setTimeout(function () {
-						GM_setClipboard( hkt_paste(pastein))
-					});
-				}
-			}
-		});
-    }
-
-
 	if((node.type === "item") || (node.type === "folder")) {
 		$.extend(items, {
 			"rename" : {
@@ -526,4 +465,4 @@ function hkt_contextmenu(node)
 	});
 	
     return items;
-}
+}line Uebung
