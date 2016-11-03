@@ -5,7 +5,7 @@
 // @description	Inserts a treeview of comments to Online Uebungssystem.
 // @downloadURL	https://github.com/pecheur/comment/raw/usability/comment.user.js
 // @updateURL	https://github.com/pecheur/comment/raw/usability/comment.user.js
-// @version	1
+// @version	2
 // @grant	GM_addStyle
 // @grant	GM_getResourceText
 // @grant	GM_getResourceURL

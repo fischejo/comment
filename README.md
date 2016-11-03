@@ -11,6 +11,10 @@ Das Firefox Addon Greasemonkey erlaubt es eigene JavaScript-Scripte in Webseiten
 3. Installation von [**Comment**](https://github.com/pecheur/jscomment/raw/master/comment.user.js) User Script.
 
 # Updates
+## Version 2
+* Removed Paste, Clipboard Options in Context-Menu
+* Added simple Insert by single left click on an Item
+
 ## Version 1
 * Für aktuelle Aufgaben angepasst.
 * Context-Menu -> Paste: implementiert
