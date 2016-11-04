@@ -1,4 +1,4 @@
-// ==UserScript==
+﻿// ==UserScript==
 // @name        comment
 // @namespace   hagen-online-uebungssystem-comment
 // @include     https://online-uebungssystem.fernuni-hagen.de/desel/KorrektorKorrekturAccessAufgabe/01613/*
@@ -17,6 +17,7 @@
 // @require https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js
 // @resource minstyle https://raw.githubusercontent.com/pecheur/comment/master/style.min.css
 // @resource item https://github.com/pecheur/comment/blob/master/page_white.png?raw=true
+// @resource folder_add https://github.com/pecheur/comment/raw/usability/folder_add.png
 // @resource folder https://github.com/pecheur/comment/blob/master/folder.png?raw=true
 // @resource collection https://github.com/pecheur/comment/blob/master/page_white_stack.png?raw=true
 // @resource pencil https://github.com/pecheur/comment/blob/master/pencil.png?raw=true
@@ -25,7 +26,6 @@
 // @resource add https://github.com/pecheur/comment/blob/master/add.png?raw=true
 // @resource delete https://github.com/pecheur/comment/blob/master/delete.png?raw=true
 // ==/UserScript==
-
 
 
 
@@ -163,7 +163,8 @@ function get_reduced_json() {
 	var obj = $('#hkt_tree').jstree(true).get_json();
 
 	var tmp = [],i,j;
-	for(i = 0, j = obj.length; i < j; i++) {
+	// obj.length -1 because the last node is add-button
+	for(i = 0, j = obj.length-1; i < j; i++) {
 		tmp.push({
 			'text' : obj[i].text,
 			'state' : obj[i].state,
@@ -214,17 +215,49 @@ $('#hkt_search').keyup(function () {
 
 // select_node
 $('#hkt_tree').on("select_node.jstree", function (e, data) {
+	if(data.node.type === 'add') {
+		var inst = $("#hkt_tree").jstree(true),
+		obj = inst.get_node("#");
 
-	var tm = (unsafeWindow.tinyMCE) ? unsafeWindow.tinyMCE : null;  
-	if(tm!= null){
-		var i, j, r = [];
-		for(i = 0, j = data.selected.length; i < j; i++) {
-			r.push(data.instance.get_node(data.selected[i]).text);
-		}	
-		tm.activeEditor.execCommand('mceInsertContent', false, r.join(' '));
+		inst.create_node(obj, {'text':'new Group', 'type':'folder', 'state':{"opened": true}}, obj.children.length-1, function (new_node) {
+			setTimeout(function () { inst.edit(new_node); },0);
+		});
+
+	} else {
+
+
+		if(data.event.ctrlKey) {
+			var tm = (unsafeWindow.tinyMCE) ? unsafeWindow.tinyMCE : null;  
+			if(tm!= null){
+				var i, j, r = [];
+				for(i = 0, j = data.selected.length; i < j; i++) {
+					r.push(data.instance.get_node(data.selected[i]).text);
+				}	
+				// using spans comes with a alot of draw backs...
+				//tm.activeEditor.execCommand('mceInsertContent', false,'<span id="hagen">'+ r.join(' ') + '</span>');
+				tm.activeEditor.execCommand('mceInsertContent', false, r.join(' '));
+	
+			}
+		}
 	}
+	$('#hkt_tree').jstree(true).deselect_node(data.node);
 
 });
+
+/*
+ * move to span branch later on...
+$('#hkt_tree').on("deselect_node.jstree", function (e, data) {
+	
+	if(data.event.ctrlKey) {
+
+		var tm = (unsafeWindow.tinyMCE) ? unsafeWindow.tinyMCE : null;  
+		if(tm!= null){
+			var id = $("#
+			tm.activeEditor.execCommand('mceRemoveNode', false,'<span id="hagen">'+ r.join(' ') + '</span>');
+		}
+	}
+});
+*/
 
 // backup after changes
 $('#hkt_tree').on('create_node.jstree', function (e, data) {
@@ -293,7 +326,7 @@ $('#hkt_tree').jstree({
 			}
 		},
 		"conditionalselect" : function (node, event) {
-			return (node.type === 'item') || (node.type === 'collection');
+			return (node.type === 'item') || (node.type === 'collection') || (node.type === 'add');
 		},
 		"contextmenu": { 
 			"show_at_node":false,
@@ -301,11 +334,13 @@ $('#hkt_tree').jstree({
 			"items": hkt_contextmenu
 		},
 		"dnd": {
-                check_while_dragging: true
+                check_while_dragging: true,
+				"copy" : false,
+				"use_html5":true
         },
 		"types": {
 			"#" : {
-				"valid_children" : ["folder"]
+				"valid_children" : ["folder", "add"]
 		    },
 			"item" : {
 				"icon" : GM_getResourceURL("item"),
@@ -319,7 +354,11 @@ $('#hkt_tree').jstree({
 			"collection" : {
 		        "icon" : GM_getResourceURL("collection"),
 				"valid_children" : [ "item" ]
-		    }
+		    },
+			"add" : {
+				"icon" : GM_getResourceURL("folder_add"),
+				"valid_children" : [ ]
+			}
 		},
 		"plugins" : [ "contextmenu", "dnd", "conditionalselect", "types", "search" , "wholerow" ]
 
@@ -342,6 +381,8 @@ for(i = 0, j = nodes.length; i < j; i++) {
 	});
 }
 
+// add add-folder
+inst.create_node(obj, {'text':'Ordner hinzufügen', 'type':'add'}, "last");
 
 
 
@@ -371,7 +412,7 @@ function hkt_contextmenu(node)
 						
 							var inst = $.jstree.reference(data.reference),
 							obj = inst.get_node(data.reference);
-							inst.create_node(obj, {'text':'new Item', 'type':'item',}, "last", function (new_node) {
+							inst.create_node(obj, {'text':'new Item', 'type':'item'}, "last", function (new_node) {
 								setTimeout(function () { inst.edit(new_node); },0);
 							});
 						}
@@ -444,25 +485,27 @@ function hkt_contextmenu(node)
 
 
 	// every node can be renamed and removed.
-	$.extend(items, {
-		"remove" : {
-			"separator_before"	: true,
-			"icon"				: GM_getResourceURL("delete"),
-			"separator_after"	: false,
-			"_disabled"			: false, 
-			"label"				: "Delete",
-			"action"			: function (data) {
-				var inst = $.jstree.reference(data.reference),
-					obj = inst.get_node(data.reference);
-				if(inst.is_selected(obj)) {
-					inst.delete_node(inst.get_selected());
-				}
-				else {
-					inst.delete_node(obj);
+	if(node.type !== "add") {
+
+		$.extend(items, {
+			"remove" : {
+				"separator_before"	: true,
+				"icon"				: GM_getResourceURL("delete"),
+				"separator_after"	: false,
+				"_disabled"			: false, 
+				"label"				: "Delete",
+				"action"			: function (data) {
+					var inst = $.jstree.reference(data.reference),
+						obj = inst.get_node(data.reference);
+					if(inst.is_selected(obj)) {
+						inst.delete_node(inst.get_selected());
+					}
+					else {
+						inst.delete_node(obj);
+					}
 				}
 			}
-		}
-	});
-	
+		});
+	}	
     return items;
 }
