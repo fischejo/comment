@@ -3,9 +3,9 @@
 // @namespace   hagen-online-uebungssystem-comment
 // @include     https://online-uebungssystem.fernuni-hagen.de/desel/KorrektorKorrekturAccessAufgabe/01613/*
 // @description	Inserts a treeview of comments to Online Uebungssystem.
-// @downloadURL	https://github.com/pecheur/comment/raw/usability/comment.user.js
-// @updateURL	https://github.com/pecheur/comment/raw/usability/comment.user.js
-// @version	2
+// @downloadURL	https://github.com/pecheur/comment/raw/master/comment.user.js
+// @updateURL	https://github.com/pecheur/comment/raw/master/comment.user.js
+// @version	3
 // @grant	GM_addStyle
 // @grant	GM_getResourceText
 // @grant	GM_getResourceURL
@@ -17,11 +17,13 @@
 // @require https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js
 // @resource minstyle https://raw.githubusercontent.com/pecheur/comment/master/style.min.css
 // @resource item https://github.com/pecheur/comment/blob/master/page_white.png?raw=true
-// @resource overwritestyle https://raw.githubusercontent.com/pecheur/comment/usability/overwrite.style.min.css
-// @resource jstree https://raw.githubusercontent.com/pecheur/comment/usability/jstree.html
-// @resource folder_add https://github.com/pecheur/comment/raw/usability/folder_add.png
+// @resource overwritestyle https://raw.githubusercontent.com/pecheur/comment/master/overwrite.style.min.css
+// @resource jstree https://raw.githubusercontent.com/pecheur/comment/master/jstree.html
 // @resource folder https://github.com/pecheur/comment/blob/master/folder.png?raw=true
+// @resource folder_star https://github.com/pecheur/comment/raw/favourites/folder_star.png
+// @resource folder_add https://github.com/pecheur/comment/raw/master/folder_add.png
 // @resource collection https://github.com/pecheur/comment/blob/master/page_white_stack.png?raw=true
+// @resource star https://github.com/pecheur/comment/raw/favourites/star.png
 // @resource pencil https://github.com/pecheur/comment/blob/master/pencil.png?raw=true
 // @resource dice https://github.com/pecheur/comment/blob/master/dice.png?raw=true
 // @resource help https://github.com/pecheur/comment/blob/master/help.png?raw=true
@@ -276,6 +278,10 @@ function load_tree(nodes) {
 	// delete all root children(folders)
 	if (root.children.length > 0) inst.delete_node(root.children);
 	
+	// add favourite-folder
+	inst.create_node(root, {'text':'Favouriten', 'type':'fav'}, "first");
+
+
 	// add new folders
 	for (i = 0, j = nodes.length; i < j; i++) {
 		var n,m;
@@ -355,6 +361,10 @@ $('#hkt_tree').jstree({
 		    },
 			"add" : {
 				"icon" : GM_getResourceURL("folder_add"),
+				"valid_children" : [ ]
+			},
+			"fav" : {
+				"icon" : GM_getResourceURL("folder_star"),
 				"valid_children" : [ ]
 			}
 		},
@@ -461,6 +471,24 @@ function hkt_contextmenu(node)
 			}
 		});
 	}
+
+	if((node.type === "item") || (node.type === "collection")) {
+		$.extend(items, {
+			"rename" : {
+				"separator_before"	: false,
+				"separator_after"	: false,
+				"_disabled"			: false,
+				"icon"				: GM_getResourceURL("star"), 
+				"label"				: "Favourite",
+				"action"			: function (data) {
+					var inst = $.jstree.reference(data.reference),
+						obj = inst.get_node(data.reference);
+					inst.edit(obj);
+				}
+			}
+		});
+	}
+
 
 
 	// every node can be renamed and removed.
