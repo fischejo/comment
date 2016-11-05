@@ -1,0 +1,21 @@
+
+#information ul, #information ol{
+  margin:0em 0 0em 0em;
+  line-height:0.5em;
+  padding-left:1.4em;
+}
+
+#information ul{
+  list-style:none;
+}
+
+#information li{
+  background:none ;
+  padding-left:0px;
+  margin:0em 0;
+}
+
+
+.vakata-context, .vakata-context ul {
+	font-size: 13px;
+}
