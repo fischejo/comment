@@ -52,14 +52,15 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
 //	Inject css and html
 // ============================================================================
 
-GM_addStyle ( GM_getResourceText ("minstyle"));
-GM_addStyle ( GM_getResourceText ("overwritestyle"));	
+GM_addStyle( GM_getResourceText("minstyle"));
+GM_addStyle( GM_getResourceText("overwritestyle"));	
+
 
 var content = document.createElement('div');
 content.innerHTML = GM_getResourceText("jstree");
 
-document.getElementsByName("KorrektorKommentar0")[0].parentNode.insertBefore(
-		content, collection.previousSibling);
+var collection = document.getElementsByName("KorrektorKommentar0")[0];
+collection.parentNode.insertBefore(content, collection.previousSibling);
 
 
 // ============================================================================
@@ -75,28 +76,9 @@ function hkt_open(evt) {
     var reader = new FileReader();
 
     reader.onload = function() {	
-		var inst = $("#hkt_tree").jstree(true);
-		var root = inst.get_node("#");
-		var i,j;
-		
-		// delete all root children
-		inst.delete_node(root.children);
-
-		// add new nodes to root
-		var nodes = JSON.parse(this.result);
-		for(i = 0, j = nodes.length; i < j; i++) {
-			inst.create_node(root, nodes[i],"last", function(node) {
-				// dice all collections
-				var n,m;
-				for(n = 0, m = node.children.length; n < m; n++) {
-					update_collection(node.children[n]);
-				}
-			});
-		}
-
-		// backup
-		GM_setValue("hkt_store", get_reduced_json());
-	}
+		load_tree( JSON.parse(this.result));
+		update_store();
+	};
     reader.readAsText(file);
 };
 
@@ -104,7 +86,7 @@ function hkt_open(evt) {
 // save file
 document.getElementById('hkt_save').onclick = hkt_save;
 function hkt_save() {
-	var blob = new Blob([get_reduced_json()], {type : 'application/json'}); // the blo
+	var blob = new Blob( [get_reduced_json()], { type : 'application/json' });
 	window.open(URL.createObjectURL(blob));
 };
 
@@ -124,10 +106,11 @@ function get_reduced_json() {
 	}
 
 	return JSON.stringify(tmp);
-}
+};
 
 
-// Workaround for get_json(null, {no_id}), which doesn't work...
+
+// Workaround for jstree.get_json(null, {no_id}), which doesn't work...
 function reduce_json(obj) {
 	var tmp = [],i,j;
 	for(i = 0, j = obj.length; i < j; i++) {
@@ -153,7 +136,7 @@ function reduce_json(obj) {
 var ignore_next_click = false;
 $(document).bind("dnd_start.vakata", function(e, data) {
 	ignore_next_click = true;
-})
+});
 
 
 // another workaround, because there is no onclick method.
@@ -165,9 +148,8 @@ $("#hkt_tree").on("click", ".jstree-anchor", function(e) {
 		return;
 	}
 
-	console.log("click");
 	var node = $("#hkt_tree").jstree(true).get_node($(this));
-	if (node.data == null) {
+	if (node.data === null) {
 		node.data = 1;		
 		setTimeout(function() {
 			if(node.data == 1) {
@@ -197,7 +179,7 @@ function on_single_click(node) {
 	} else if (node.type !== "folder") {
 		// anything else
 		var tm = (unsafeWindow.tinyMCE) ? unsafeWindow.tinyMCE : null;  
-		if(tm!= null){
+		if(tm !== null){
 			tm.activeEditor.execCommand('mceInsertContent', false, node.text + " ");
 		}
 	}
@@ -208,14 +190,13 @@ function on_single_click(node) {
 // ============================================================================
 
 
-
 // backup after changes
 $('#hkt_tree').on('create_node.jstree', function (e, data) {
 	if (data.node.type === "item") {
 		update_collection( data.parent);
 	}
 	update_store();
-})
+});
 
 $('#hkt_tree').on('rename_node.jstree', function (e, data) {
 	if (data.node.type === "item") {
@@ -223,7 +204,7 @@ $('#hkt_tree').on('rename_node.jstree', function (e, data) {
 	}
 
 	update_store();
-})
+});
 
 $('#hkt_tree').on('delete_node.jstree', function (e, data) {
 	if (data.node.type === "item") {
@@ -231,7 +212,7 @@ $('#hkt_tree').on('delete_node.jstree', function (e, data) {
 	}
 
 	update_store();
-})
+});
 
 $('#hkt_tree').on('move_node.jstree', function (e, data) {
 	if (data.node.type === "item") {
@@ -241,9 +222,10 @@ $('#hkt_tree').on('move_node.jstree', function (e, data) {
 
 	update_store();
 	ignore_next_click = false;
-})
+});
 
 
+// dice an item, which is represented by the collection.
 function update_collection(parent_id) {
 	var inst = $('#hkt_tree').jstree(true);
 	var parent = inst.get_node(parent_id);
@@ -258,59 +240,62 @@ function update_collection(parent_id) {
 	}
 }
 
+// last sync from the GM store.
+var last_update = Date.now();
+var syncing = false;
+
 
 function update_store() {
-	if(disable_update) 
-		return;
+	// are we syncing?
+	if(syncing) return;
+	console.log("update_store");
 	last_update = Date.now();
 	GM_setValue("hkt_store", get_reduced_json());
-	// should we care about race conditions?
 	GM_setValue("hkt_timestamp", last_update);
-
-	console.log("last_update: "+last_update);
-
 }
 
-var last_update = Date.now(), disable_update = false;
+
+// check every 2s for changes in store.
 setInterval( function() {
 	var timestamp = GM_getValue("hkt_timestamp"); 	
-	if( last_update < timestamp && timestamp != null) {
-		console.log("changed: "+last_update + " " + timestamp);	
-		last_update = timestamp;
-		
-		disable_update = true;
-		var inst = $("#hkt_tree").jstree(true);
-		var root = inst.get_node("#");	
-		inst.delete_node(root.children);
-		
-		load_tree();
-		disable_update = false;
+	if( last_update < timestamp && timestamp !== null) {
+		last_update = timestamp;	
+		load_tree_from_store();
 	}
 
 },2000);
 
 
-function load_tree() {
+function load_tree(nodes) {
+	syncing = true;
+	console.log("load_tree");
 	var inst = $("#hkt_tree").jstree(true);
-	var obj = inst.get_node("#");
-	var nodes = JSON.parse(GM_getValue("hkt_store","[]"));
-	var i,j;	
-	for(i = 0, j = nodes.length; i < j; i++) {
+	var root = inst.get_node("#");
+	var i,j;
+
+	// delete all root children(folders)
+	if (root.children.length > 0) inst.delete_node(root.children);
+	
+	// add new folders
+	for (i = 0, j = nodes.length; i < j; i++) {
+		var n,m;
 		// add folder
-		inst.create_node(obj, nodes[i], "last", function(node) {
+		inst.create_node(root, nodes[i], "last", function(node) {
 			// dice all collections
-			var n,m;
 			for(n = 0, m = node.children.length; n < m; n++) {
 				update_collection(node.children[n]);
 			}
 		});
 	}
 
-	
 	// add add-folder
-	inst.create_node(obj, {'text':'Ordner hinzufügen', 'type':'add'}, "last");
+	inst.create_node(root, {'text':'Ordner hinzufügen', 'type':'add'}, "last");
+	syncing = false;
 }
 
+function load_tree_from_store() {
+	load_tree( JSON.parse( GM_getValue( "hkt_store","[]")));
+}
 
 // ============================================================================
 //  jstree
@@ -377,9 +362,8 @@ $('#hkt_tree').jstree({
 
 });
 
-
-// load backup
-load_tree();
+// init
+load_tree_from_store();
 
 // ============================================================================
 //	Context-Menu
@@ -481,7 +465,6 @@ function hkt_contextmenu(node)
 
 	// every node can be renamed and removed.
 	if(node.type !== "add") {
-
 		$.extend(items, {
 			"remove" : {
 				"separator_before"	: true,
