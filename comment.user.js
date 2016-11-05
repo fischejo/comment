@@ -93,14 +93,9 @@ GM_addStyle( cssContextMenu);
 var content = document.createElement('div');
 content.innerHTML = `
 <!--bar-->
-<div style="min-height:i22px;">
-	<button id="hkt_add" type="button" style="float:left; height:22px; margin-right:5px;" class="btn btn-success btn-sm">Add Folder</button>
-	<button id="hkt_save" style="float:left; height:22px;margin-right:5px;">Save</button>
-	<input id='hkt_open' type='file' accept='application/json' style='float:left;height: 22px;'>
-	
-	<div style="float:right;">
-		<input id="hkt_search" placeholder="Search"  value="" class="input" style="margin:0em auto 1em auto; display:block; padding:4px; border:1px solid silver; height:12px;float:right;" type="text"/>
-	</div>
+<div>
+	<button id="hkt_save" style="float:left; margin-right:5px; margin-bottom:5px;">Exportieren</button>
+	<input id='hkt_open' type='file' accept='application/json' style='float:left;'>	
 </div>
 
 <!--tree-->
@@ -191,81 +186,73 @@ function reduce_json(obj) {
 	return tmp;
 };
 
-// create add-folder button
-$('#hkt_add').click(function(){
-	var inst = $("#hkt_tree").jstree(true),
-	obj = inst.get_node("#");
-	inst.create_node(obj, {'text':'new Group', 'type':'folder', 'state':{"opened": true}}, "last", function (new_node) {
-		setTimeout(function () { inst.edit(new_node); },0);
-	});
-	
+
+// Workaround: whenever a drag fails, because the dragged node stays at its
+// plays, a click is fired. 
+var ignore_next_click = false;
+$(document).bind("dnd_start.vakata", function(e, data) {
+	ignore_next_click = true;
+})
+
+
+
+
+
+// another workaround, because there is no onclick method.
+// select_node doesn't work, because moving a node fires select_node, too.
+// Additional, we have to take care of double clicks...
+$("#hkt_tree").on("click", ".jstree-anchor", function(e) {
+	if (ignore_next_click) {
+		ignore_next_click = false;
+		return;
+	}
+
+	console.log("click");
+	var node = $("#hkt_tree").jstree(true).get_node($(this));
+	if (node.data == null) {
+		node.data = 1;		
+		setTimeout(function() {
+			if(node.data == 1) {
+				on_single_click(node);
+			}
+			node.data = null;
+		}, (node.children.length > 0 ? 250 : 0));
+	} else {
+		node.data = null;
+		// double click;
+	}
 });
 
 
-// search 
-var to = false;
-$('#hkt_search').keyup(function () {
-    if(to) { clearTimeout(to); }
-    to = setTimeout(function () {
-      var v = $('#hkt_search').val();
-      $('#hkt_tree').jstree(true).search(v);
-    }, 250);
-});
+// handles all single_clicks
+function on_single_click(node) {
 
-
-// select_node
-$('#hkt_tree').on("select_node.jstree", function (e, data) {
-	if(data.node.type === 'add') {
+	if(node.type === 'add') {
+		// click on add-button
 		var inst = $("#hkt_tree").jstree(true),
 		obj = inst.get_node("#");
 
-		inst.create_node(obj, {'text':'new Group', 'type':'folder', 'state':{"opened": true}}, obj.children.length-1, function (new_node) {
+		inst.create_node(obj, {'text':'new Group', 'type':'folder', 'state':{"opened": true}}, 
+				obj.children.length-1, function (new_node) {
 			setTimeout(function () { inst.edit(new_node); },0);
 		});
-
-	} else {
-
-
-		if(data.event.ctrlKey) {
-			var tm = (unsafeWindow.tinyMCE) ? unsafeWindow.tinyMCE : null;  
-			if(tm!= null){
-				var i, j, r = [];
-				for(i = 0, j = data.selected.length; i < j; i++) {
-					r.push(data.instance.get_node(data.selected[i]).text);
-				}	
-				// using spans comes with a alot of draw backs...
-				//tm.activeEditor.execCommand('mceInsertContent', false,'<span id="hagen">'+ r.join(' ') + '</span>');
-				tm.activeEditor.execCommand('mceInsertContent', false, r.join(' '));
-	
-			}
-		}
-	}
-	$('#hkt_tree').jstree(true).deselect_node(data.node);
-
-});
-
-/*
- * move to span branch later on...
-$('#hkt_tree').on("deselect_node.jstree", function (e, data) {
-	
-	if(data.event.ctrlKey) {
-
+	} else if (node.type !== "folder") {
+		// anything else
 		var tm = (unsafeWindow.tinyMCE) ? unsafeWindow.tinyMCE : null;  
 		if(tm!= null){
-			var id = $("#
-			tm.activeEditor.execCommand('mceRemoveNode', false,'<span id="hagen">'+ r.join(' ') + '</span>');
+			tm.activeEditor.execCommand('mceInsertContent', false, node.text + " ");
 		}
 	}
-});
-*/
+}
+
+
 
 // backup after changes
 $('#hkt_tree').on('create_node.jstree', function (e, data) {
 	if (data.node.type === "item") {
 		update_collection( data.parent);
 	}
-
-	GM_setValue("hkt_store", get_reduced_json());
+	update_store();
 })
 
 $('#hkt_tree').on('rename_node.jstree', function (e, data) {
@@ -273,7 +260,7 @@ $('#hkt_tree').on('rename_node.jstree', function (e, data) {
 		update_collection( data.node.parent);
 	}
 
-	GM_setValue("hkt_store", get_reduced_json());
+	update_store();
 })
 
 $('#hkt_tree').on('delete_node.jstree', function (e, data) {
@@ -281,7 +268,7 @@ $('#hkt_tree').on('delete_node.jstree', function (e, data) {
 		update_collection( data.parent);
 	}
 
-	GM_setValue("hkt_store", get_reduced_json());
+	update_store();
 })
 
 $('#hkt_tree').on('move_node.jstree', function (e, data) {
@@ -290,8 +277,8 @@ $('#hkt_tree').on('move_node.jstree', function (e, data) {
 		update_collection( data.old_parent);
 	}
 
-	GM_setValue("hkt_store", get_reduced_json());
-
+	update_store();
+	ignore_next_click = false;
 })
 
 
@@ -310,13 +297,69 @@ function update_collection(parent_id) {
 }
 
 
+function update_store() {
+	if(disable_update) 
+		return;
+	last_update = Date.now();
+	GM_setValue("hkt_store", get_reduced_json());
+	// should we care about race conditions?
+	GM_setValue("hkt_timestamp", last_update);
+
+	console.log("last_update: "+last_update);
+
+}
+
+var last_update = Date.now(), disable_update = false;
+setInterval( function() {
+	var timestamp = GM_getValue("hkt_timestamp"); 	
+	if( last_update < timestamp && timestamp != null) {
+		console.log("changed: "+last_update + " " + timestamp);	
+		last_update = timestamp;
+		
+		disable_update = true;
+		var inst = $("#hkt_tree").jstree(true);
+		var root = inst.get_node("#");	
+		inst.delete_node(root.children);
+		
+		load_tree();
+		disable_update = false;
+	}
+
+},2000);
+
+
+function load_tree() {
+	var inst = $("#hkt_tree").jstree(true);
+	var obj = inst.get_node("#");
+	var nodes = JSON.parse(GM_getValue("hkt_store","[]"));
+	var i,j;	
+	for(i = 0, j = nodes.length; i < j; i++) {
+		// add folder
+		inst.create_node(obj, nodes[i], "last", function(node) {
+			// dice all collections
+			var n,m;
+			for(n = 0, m = node.children.length; n < m; n++) {
+				update_collection(node.children[n]);
+			}
+		});
+	}
+
+	
+	// add add-folder
+	inst.create_node(obj, {'text':'Ordner hinzufügen', 'type':'add'}, "last");
+}
 
 // tree
 $('#hkt_tree').jstree({
 		"core": { 
 			'data' : false,	
 			"animation" : false,
-			'check_callback': true,
+			'check_callback' : function (operation, node, node_parent, node_position, more) {				
+				if(node.type === "folder" && operation === 'move_node' && node_position == node_parent.children.length -1) 
+					return false;
+
+				return true;
+    	    },	
 			"multiple" : false,
 			"themes" : {	
 				"stripes" : true,
@@ -325,9 +368,7 @@ $('#hkt_tree').jstree({
 				"icons": true
 			}
 		},
-		"conditionalselect" : function (node, event) {
-			return (node.type === 'item') || (node.type === 'collection') || (node.type === 'add');
-		},
+		"conditionalselect" : false,	// nothing is selectable.
 		"contextmenu": { 
 			"show_at_node":false,
 			"select_node":false,
@@ -336,7 +377,10 @@ $('#hkt_tree').jstree({
 		"dnd": {
                 check_while_dragging: true,
 				"copy" : false,
-				"use_html5":true
+				"use_html5":true,
+				"is_draggable": function (node) {
+					return node[0].type === "add" ? false : true;
+				}
         },
 		"types": {
 			"#" : {
@@ -360,31 +404,13 @@ $('#hkt_tree').jstree({
 				"valid_children" : [ ]
 			}
 		},
-		"plugins" : [ "contextmenu", "dnd", "conditionalselect", "types", "search" , "wholerow" ]
+		"plugins" : [ "contextmenu", "dnd", "conditionalselect", "types", "wholerow" ]
 
 });
 
 
 // load backup
-var inst = $("#hkt_tree").jstree(true);
-var obj = inst.get_node("#");
-var nodes = JSON.parse(GM_getValue("hkt_store","[]"));
-var i,j;	
-for(i = 0, j = nodes.length; i < j; i++) {
-	// add folder
-	inst.create_node(obj, nodes[i], "last", function(node) {
-		// dice all collections
-		var n,m;
-		for(n = 0, m = node.children.length; n < m; n++) {
-			update_collection(node.children[n]);
-		}
-	});
-}
-
-// add add-folder
-inst.create_node(obj, {'text':'Ordner hinzufügen', 'type':'add'}, "last");
-
-
+load_tree();
 
 // ============================================================================
 //	Context-Menu
