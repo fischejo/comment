@@ -17,6 +17,8 @@
 // @require https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js
 // @resource minstyle https://raw.githubusercontent.com/pecheur/comment/master/style.min.css
 // @resource item https://github.com/pecheur/comment/blob/master/page_white.png?raw=true
+// @resource overwritestyle https://raw.githubusercontent.com/pecheur/comment/usability/overwrite.style.min.css
+// @resource jstree https://raw.githubusercontent.com/pecheur/comment/usability/jstree.html
 // @resource folder_add https://github.com/pecheur/comment/raw/usability/folder_add.png
 // @resource folder https://github.com/pecheur/comment/blob/master/folder.png?raw=true
 // @resource collection https://github.com/pecheur/comment/blob/master/page_white_stack.png?raw=true
@@ -33,6 +35,7 @@
 // ============================================================================
 //	Support
 // ============================================================================
+
 // Only run in iframe.
 if (window.top == window.self)  //don't run on the top window
     return;
@@ -45,70 +48,22 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
   alert('The File APIs are not fully supported in this browser.');
 }
 
-
 // ============================================================================
-//	CSS/Style
-// ============================================================================
-
-// tree style
-var cssTree  = GM_getResourceText ("minstyle");
-GM_addStyle (cssTree);
-
-// li, lu style overwrite
-var cssInformation = `
-#information ul, #information ol{
-  margin:0em 0 0em 0em;
-  line-height:0.5em;
-  padding-left:1.4em;
-}
-
-#information ul{
-  list-style:none;
-}
-
-#information li{
-  background:none ;
-  padding-left:0px;
-  margin:0em 0;
-}
-`;
-GM_addStyle( cssInformation);
-
-var cssContextMenu = `
-.vakata-context, .vakata-context ul {
-	font-size: 13px;
-}
-`;
-GM_addStyle( cssContextMenu);
-
-		
-
-
-// ============================================================================
-//  HTML
+//	Inject css and html
 // ============================================================================
 
+GM_addStyle ( GM_getResourceText ("minstyle"));
+GM_addStyle ( GM_getResourceText ("overwritestyle"));	
 
-// add html code
 var content = document.createElement('div');
-content.innerHTML = `
-<!--bar-->
-<div>
-	<button id="hkt_save" style="float:left; margin-right:5px; margin-bottom:5px;">Exportieren</button>
-	<input id='hkt_open' type='file' accept='application/json' style='float:left;'>	
-</div>
+content.innerHTML = GM_getResourceText("jstree");
 
-<!--tree-->
-<div style="overflow:auto; width:100%; height:60vh; border:1px solid #ccc; backgroundColor: #f5f5f5; margin: 0em 0 0em 0; margin-bottom:10px;">
-	<div id="hkt_tree"></div>
-</div>
-`;
+document.getElementsByName("KorrektorKommentar0")[0].parentNode.insertBefore(
+		content, collection.previousSibling);
 
-var collection = document.getElementsByName("KorrektorKommentar0")[0];
-collection.parentNode.insertBefore(content, collection.previousSibling);
 
 // ============================================================================
-//  JS
+//  Export, Browse buttons
 // ============================================================================
 
 
@@ -187,15 +142,18 @@ function reduce_json(obj) {
 };
 
 
+
+// ============================================================================
+//  onClick & Paste
+// ============================================================================
+
+
 // Workaround: whenever a drag fails, because the dragged node stays at its
 // plays, a click is fired. 
 var ignore_next_click = false;
 $(document).bind("dnd_start.vakata", function(e, data) {
 	ignore_next_click = true;
 })
-
-
-
 
 
 // another workaround, because there is no onclick method.
@@ -244,6 +202,10 @@ function on_single_click(node) {
 		}
 	}
 }
+
+// ============================================================================
+//	store, restore & sync
+// ============================================================================
 
 
 
@@ -348,6 +310,13 @@ function load_tree() {
 	// add add-folder
 	inst.create_node(obj, {'text':'Ordner hinzufügen', 'type':'add'}, "last");
 }
+
+
+// ============================================================================
+//  jstree
+// ============================================================================
+
+
 
 // tree
 $('#hkt_tree').jstree({
