@@ -3,9 +3,9 @@
 // @namespace   hagen-online-uebungssystem-comment
 // @include     https://online-uebungssystem.fernuni-hagen.de/desel/KorrektorKorrekturAccessAufgabe/01613/*
 // @description	Inserts a treeview of comments to Online Uebungssystem.
-// @downloadURL	https://github.com/pecheur/comment/raw/master/comment.user.js
-// @updateURL	https://github.com/pecheur/comment/raw/master/comment.user.js
-// @version	3
+// @downloadURL	https://github.com/pecheur/comment/raw/usability/comment.user.js
+// @updateURL	https://github.com/pecheur/comment/raw/usability/comment.user.js
+// @version	2
 // @grant	GM_addStyle
 // @grant	GM_getResourceText
 // @grant	GM_getResourceURL
@@ -17,12 +17,11 @@
 // @require https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js
 // @resource minstyle https://raw.githubusercontent.com/pecheur/comment/master/style.min.css
 // @resource item https://github.com/pecheur/comment/blob/master/page_white.png?raw=true
-// @resource overwritestyle https://raw.githubusercontent.com/pecheur/comment/master/overwrite.style.min.css
-// @resource jstree https://raw.githubusercontent.com/pecheur/comment/master/jstree.html
+// @resource overwritestyle https://raw.githubusercontent.com/pecheur/comment/usability/overwrite.style.min.css
+// @resource jstree https://raw.githubusercontent.com/pecheur/comment/usability/jstree.html
+// @resource folder_add https://github.com/pecheur/comment/raw/usability/folder_add.png
 // @resource folder https://github.com/pecheur/comment/blob/master/folder.png?raw=true
-// @resource folder_add https://github.com/pecheur/comment/raw/master/folder_add.png
 // @resource collection https://github.com/pecheur/comment/blob/master/page_white_stack.png?raw=true
-// @resource star https://github.com/pecheur/comment/raw/master/star.png
 // @resource pencil https://github.com/pecheur/comment/blob/master/pencil.png?raw=true
 // @resource dice https://github.com/pecheur/comment/blob/master/dice.png?raw=true
 // @resource help https://github.com/pecheur/comment/blob/master/help.png?raw=true
@@ -53,8 +52,8 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
 //	Inject css and html
 // ============================================================================
 
-GM_addStyle( GM_getResourceText("minstyle"));
-GM_addStyle( GM_getResourceText("overwritestyle"));	
+GM_addStyle ( GM_getResourceText ("minstyle"));
+GM_addStyle ( GM_getResourceText ("overwritestyle"));	
 
 
 var content = document.createElement('div');
@@ -79,7 +78,7 @@ function hkt_open(evt) {
     reader.onload = function() {	
 		load_tree( JSON.parse(this.result));
 		update_store();
-	};
+	}
     reader.readAsText(file);
 };
 
@@ -107,7 +106,7 @@ function get_reduced_json() {
 	}
 
 	return JSON.stringify(tmp);
-};
+}
 
 
 
@@ -137,7 +136,7 @@ function reduce_json(obj) {
 var ignore_next_click = false;
 $(document).bind("dnd_start.vakata", function(e, data) {
 	ignore_next_click = true;
-});
+})
 
 
 // another workaround, because there is no onclick method.
@@ -150,7 +149,7 @@ $("#hkt_tree").on("click", ".jstree-anchor", function(e) {
 	}
 
 	var node = $("#hkt_tree").jstree(true).get_node($(this));
-	if (node.data === null) {
+	if (node.data == null) {
 		node.data = 1;		
 		setTimeout(function() {
 			if(node.data == 1) {
@@ -180,13 +179,8 @@ function on_single_click(node) {
 	} else if (node.type !== "folder") {
 		// anything else
 		var tm = (unsafeWindow.tinyMCE) ? unsafeWindow.tinyMCE : null;  
-		if(tm !== null){
-			var text = node.text;
-			//if(!text.match(/[^/](\s|<br>)$/g)) {
-			//	console.log(text);
-			
-			text += " ";
-			tm.activeEditor.execCommand('mceInsertContent', false, text);
+		if(tm!= null){
+			tm.activeEditor.execCommand('mceInsertContent', false, node.text + " ");
 		}
 	}
 }
@@ -202,7 +196,7 @@ $('#hkt_tree').on('create_node.jstree', function (e, data) {
 		update_collection( data.parent);
 	}
 	update_store();
-});
+})
 
 $('#hkt_tree').on('rename_node.jstree', function (e, data) {
 	if (data.node.type === "item") {
@@ -210,7 +204,7 @@ $('#hkt_tree').on('rename_node.jstree', function (e, data) {
 	}
 
 	update_store();
-});
+})
 
 $('#hkt_tree').on('delete_node.jstree', function (e, data) {
 	if (data.node.type === "item") {
@@ -218,7 +212,7 @@ $('#hkt_tree').on('delete_node.jstree', function (e, data) {
 	}
 
 	update_store();
-});
+})
 
 $('#hkt_tree').on('move_node.jstree', function (e, data) {
 	if (data.node.type === "item") {
@@ -228,26 +222,7 @@ $('#hkt_tree').on('move_node.jstree', function (e, data) {
 
 	update_store();
 	ignore_next_click = false;
-});
-
-// selection changed (marking)
-$('#hkt_tree').on('changed.jstree', function (e, data) {
-	update_store();
-	ignore_next_click = false;
-});
-
-$('#hkt_tree').on('close_node.jstree', function (e, data) {
-	update_store();
-	ignore_next_click = false;
-});
-
-$('#hkt_tree').on('open_node.jstree', function (e, data) {
-	update_store();
-	ignore_next_click = false;
-});
-
-
-
+})
 
 
 // dice an item, which is represented by the collection.
@@ -266,14 +241,13 @@ function update_collection(parent_id) {
 }
 
 // last sync from the GM store.
-var last_update = Date.now();
-var syncing = false;
+var last_update = Date.now(), syncing = false;
 
 
 function update_store() {
 	// are we syncing?
 	if(syncing) return;
-	console.log("update_store");
+
 	last_update = Date.now();
 	GM_setValue("hkt_store", get_reduced_json());
 	GM_setValue("hkt_timestamp", last_update);
@@ -283,7 +257,7 @@ function update_store() {
 // check every 2s for changes in store.
 setInterval( function() {
 	var timestamp = GM_getValue("hkt_timestamp"); 	
-	if( last_update < timestamp && timestamp !== null) {
+	if( last_update < timestamp && timestamp != null) {
 		last_update = timestamp;	
 		load_tree_from_store();
 	}
@@ -291,20 +265,18 @@ setInterval( function() {
 },2000);
 
 
-function load_tree(nodes) {
-	syncing = true;
+function load_tree(var nodes) {
 	console.log("load_tree");
+	syncing = true;
 	var inst = $("#hkt_tree").jstree(true);
 	var root = inst.get_node("#");
-	var i,j;
+	var i,j,n,m;
 
 	// delete all root children(folders)
 	if (root.children.length > 0) inst.delete_node(root.children);
-
-
+	
 	// add new folders
 	for (i = 0, j = nodes.length; i < j; i++) {
-		var n,m;
 		// add folder
 		inst.create_node(root, nodes[i], "last", function(node) {
 			// dice all collections
@@ -384,7 +356,7 @@ $('#hkt_tree').jstree({
 				"valid_children" : [ ]
 			}
 		},
-		"plugins" : [ "contextmenu", "dnd", "conditionalselect", "types" ]
+		"plugins" : [ "contextmenu", "dnd", "conditionalselect", "types", "wholerow" ]
 
 });
 
@@ -488,38 +460,10 @@ function hkt_contextmenu(node)
 		});
 	}
 
-	if((node.type === "item") || (node.type === "collection")) {
-		var inst = $('#hkt_tree').jstree(true);
-		var obj = inst.get_node(node);
-		$.extend(items, {
-			"star" : {
-				"separator_before"	: false,
-				"separator_after"	: false,
-				"_disabled"			: false,
-				"icon"				: GM_getResourceURL("star"), 
-				"label"				: inst.is_selected(obj) ? "Unmark" : "Mark",
-				"action"			: function (data) {
-					var inst = $.jstree.reference(data.reference),
-						obj = inst.get_node(data.reference);
-					if(inst.is_selected(obj)) {
-						inst.deselect_node(obj, false, false);
-					} else {
-						inst.select_node(obj, false, false);
-					}
-					// color background
-					//$("#"+obj.id+" >a").css("background-color","#FFEC8B");
-					// bold
-					//$("#"+obj.id+" >a").css("font-weight","bold");
-
-				}
-			}
-		});
-	}
-
-
 
 	// every node can be renamed and removed.
 	if(node.type !== "add") {
+
 		$.extend(items, {
 			"remove" : {
 				"separator_before"	: true,
@@ -530,9 +474,12 @@ function hkt_contextmenu(node)
 				"action"			: function (data) {
 					var inst = $.jstree.reference(data.reference),
 						obj = inst.get_node(data.reference);
-					
-					inst.delete_node(obj);
-				
+					if(inst.is_selected(obj)) {
+						inst.delete_node(inst.get_selected());
+					}
+					else {
+						inst.delete_node(obj);
+					}
 				}
 			}
 		});
