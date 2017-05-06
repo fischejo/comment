@@ -10,10 +10,6 @@ Das Firefox Addon Greasemonkey erlaubt es eigene JavaScript-Scripte in Webseiten
 2. Installation von [**Greasemonkey**](https://addons.mozilla.org/de/firefox/addon/greasemonkey/) Addon
 3. Installation von [**Comment**](https://github.com/pecheur/jscomment/raw/master/comment.user.js) User Script.
 
-# Todo
-* Whenever a line is pasted, a whitespace is added automatically. This is not necessary for line breaks. But the HTML-Line Break doesn't seem to work without a whitespace. Solution in version 4: Each line is pasted as paragraph and holding CTRL-Key pastes the item without line breaks.
-* A text line is called item, maybe snippet is a better.
-
 # Updates
 ## Version 3
 * Mark/Unmark items for better visibility in the list. (Testing)
